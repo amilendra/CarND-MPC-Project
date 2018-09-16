@@ -1,0 +1,68 @@
+The Model
+=========
+We use a Model Predictive Control (MPC) Model which is based on Global Kinematic Model.
+
+It is defined by 6 states.
+    x position - x
+    y position — y
+    orientation — psi
+    velocity - v
+    cross-track error - cte; error between the center of the road and the vehicle's position
+    orientation error - epsi
+
+The actuators responsible for controlling the state of the model are
+    acceleration - a
+    steering angle - delta
+
+Each state at time (t'), can be derived using the states at time (t) as follows.
+dt is the time difference between t' and t,
+    x(t') = x(t) + v(t) * cos(psi(t)) * dt
+    y(t') = y(t) + v(t) * sin(psi(t)) * dt
+    psi(t') = psi(t) + (v(t) * delta(t) * dt) / Lf; 
+        where Lf is a constant for the vehicle that measures the distance
+        between the front of the vehicle and its center of gravity
+    v(t') = v(t) + a(t) * dt
+    cte(t') = cte(t) + v(t) * sin(epsi(t)) * dt
+    epsi(t') = epsi(t) + (v(t) * delta(t) * dt) / Lf
+
+Timestep Length and Elapsed Duration (N & dt)
+=============================================
+It was a trial and error process really.
+I had a look at the solution in CarND-MPC-Quizzes, and then went through the
+walkthrough video of this project, and most of the work was done.
+What was remaining was to tune N and dt for a certain reference speed.
+The walkthrough video used a reference speed of 100 mph,
+paired with N = 10 and dt = 0.1.
+However, this did not give me a good result so I tried tuning N and dt while
+keeping the speed constant. I used 
+Speed = 100 mph
+N = 20 and dt = 0.2
+N = 20 and dt = 0.3
+N = 20 and dt = 0.4
+N = 20 and dt = 0.5
+N = 10 and dt = 0.5
+
+I guess the speed is too high so even a small deviation will make
+the car go off track in an instant so decided to try reducing the speed.
+
+Speed = 70 mph
+N = 20 and dt = 0.2
+N = 20 and dt = 0.3
+N = 20 and dt = 0.4
+N = 20 and dt = 0.5
+N = 10 and dt = 0.5
+
+This did not work either, so I reduced the speed to a more conservative 40 mph.
+N = 20 and dt = 0.2
+N = 10 and dt = 0.1
+
+The final combination gave me a good drive without going off track.
+
+Polynomial Fitting and MPC Preprocessing
+========================================
+I did not do any preprocessing of the lake_track_waypoints.csv
+
+Model Predictive Control with Latency
+=====================================
+Did not have to do anything special to handle latency.
+I just ported the quiz solution and walkthough, tuned N and dt and it worked.
